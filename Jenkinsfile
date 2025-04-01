@@ -13,7 +13,11 @@ pipeline {
                 git branch: 'zeinebmaatalli-4TWIN1-G6', url: 'https://github.com/ademselmani/4TWIN1-G6-Sukunami.git'
             }
         }
-
+          stage('Maven') {
+            steps {
+                sh 'mvn -version'
+            }
+        }
          stage('Compile Stage') {
             steps {
                 sh 'mvn clean compile'
