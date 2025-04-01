@@ -1,5 +1,7 @@
 package tn.esprit.spring.kaddem.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/equipe")
+@Tag(name = "Gestion equipe")
 public class EquipeRestController {
 	IEquipeService equipeService;
 	// http://localhost:8089/Kaddem/equipe/retrieve-all-equipes
@@ -27,6 +30,7 @@ public class EquipeRestController {
 	}
 
 	// http://localhost:8089/Kaddem/equipe/add-equipe
+	@Operation(description = "ajouter une equipe a   la base de données")
 	@PostMapping("/add-equipe")
 	public Equipe addEquipe(@RequestBody Equipe e) {
 		Equipe equipe = equipeService.addEquipe(e);

@@ -1,5 +1,7 @@
 package tn.esprit.spring.kaddem.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/etudiant")
+@Tag(name = "Gestion equipe")
 public class EtudiantRestController {
 	@Autowired
 	IEtudiantService etudiantService;
@@ -27,6 +30,7 @@ public class EtudiantRestController {
 	}
 
 	// http://localhost:8089/Kaddem/etudiant/add-etudiant
+	@Operation(description = "ajouter un etudiant a   la base de données")
 	@PostMapping("/add-etudiant")
 	public Etudiant addEtudiant(@RequestBody Etudiant e) {
 		Etudiant etudiant = etudiantService.addEtudiant(e);
