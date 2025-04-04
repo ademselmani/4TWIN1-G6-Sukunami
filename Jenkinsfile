@@ -31,6 +31,11 @@ pipeline {
                 sh "mvn sonar:sonar -Dsonar.login=squ_a546fefc5f50e9f80714f82c88e69e723519390a -Dmaven.test.skip=true"
             }
         }
+        stage('Deploy to Nexus'){
+            steps{
+                sh 'mvn deploy -Dmaven.test.skip=true'
+            }
+        }
     }
 
     post {
