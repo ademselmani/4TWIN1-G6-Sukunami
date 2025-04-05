@@ -10,7 +10,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'ademselmani-4Twin1-G6', url: 'https://github.com/ademselmani/4TWIN1-G6-Sukunami.git'
+                git branch: 'zeinebmaatalli', url: 'https://github.com/ademselmani/4TWIN1-G6-Sukunami.git'
             }
         }
 
@@ -38,12 +38,5 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            echo 'Build successful!'
-        }
-        failure {
-            echo 'Build failed!'
-        }
-    }
+
 }
