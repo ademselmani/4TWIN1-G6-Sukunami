@@ -1,0 +1,36 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: kaddem
+    ports:
+      - "3306:3306"
+    networks:
+      - kaddem-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  kaddem-app:
+    image: moha/kaddem:latest
+    container_name: kaddem-app
+    depends_on:
+      - mysql
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kaddem?createDatabaseIfNotExist=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - kaddem-network
+    restart: always
+
+networks:
+  kaddem-network:
+    driver: bridge
+
+volumes:
+  mysql-data: 

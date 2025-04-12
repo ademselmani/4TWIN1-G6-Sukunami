@@ -8,8 +8,11 @@ import tn.esprit.spring.kaddem.entities.Universite;
 import tn.esprit.spring.kaddem.repositories.DepartementRepository;
 import tn.esprit.spring.kaddem.repositories.UniversiteRepository;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
@@ -27,36 +30,105 @@ public class UniversiteServiceImpl implements IUniversiteService{
     }
 
  public    Universite addUniversite (Universite  u){
+    if (u == null) {
+        log.error("Cannot add null university");
+        throw new IllegalArgumentException("University cannot be null");
+    }
     log.info("Adding a new university: {}", u.getNomUniv());
     return  (universiteRepository.save(u));
     }
 
  public    Universite updateUniversite (Universite  u){
+     if (u == null) {
+        log.error("Cannot update null university");
+        throw new IllegalArgumentException("University cannot be null");
+     }
+     if (u.getIdUniv() == null) {
+        log.error("Cannot update university with null ID");
+        throw new IllegalArgumentException("University ID cannot be null for update operation");
+     }
      log.info("Updating university with ID: {}", u.getIdUniv());
      return  (universiteRepository.save(u));
     }
 
   public Universite retrieveUniversite (Integer idUniversite){
+    if (idUniversite == null) {
+        log.error("Cannot retrieve university with null ID");
+        throw new IllegalArgumentException("University ID cannot be null");
+    }
     log.info("Retrieving university with ID: {}", idUniversite);
-    Universite u = universiteRepository.findById(idUniversite).get();
-    return  u;
+    try {
+        return universiteRepository.findById(idUniversite)
+            .orElseThrow(() -> new NoSuchElementException("University with ID " + idUniversite + " not found"));
+    } catch (NoSuchElementException e) {
+        log.error("University with ID {} not found", idUniversite);
+        throw e;
     }
-    public  void deleteUniversite(Integer idUniversite){
-        log.info("Deleting university with ID: {}", idUniversite);
-        universiteRepository.delete(retrieveUniversite(idUniversite));
+  }
+    
+  public void deleteUniversite(Integer idUniversite){
+    if (idUniversite == null) {
+        log.error("Cannot delete university with null ID");
+        throw new IllegalArgumentException("University ID cannot be null");
     }
+    log.info("Deleting university with ID: {}", idUniversite);
+    try {
+        Universite universite = retrieveUniversite(idUniversite);
+        universiteRepository.delete(universite);
+        log.info("University with ID {} deleted successfully", idUniversite);
+    } catch (NoSuchElementException e) {
+        log.error("Cannot delete - university with ID {} not found", idUniversite);
+        throw e;
+    }
+  }
 
-    public void assignUniversiteToDepartement(Integer idUniversite, Integer idDepartement){
-        log.info("Assigning university ID: {} to department ID: {}", idUniversite, idDepartement);
-        Universite u= universiteRepository.findById(idUniversite).orElse(null);
-        Departement d= departementRepository.findById(idDepartement).orElse(null);
-        u.getDepartements().add(d);
-        universiteRepository.save(u);
+  public void assignUniversiteToDepartement(Integer idUniversite, Integer idDepartement){
+    if (idUniversite == null || idDepartement == null) {
+        log.error("Cannot assign university to department with null IDs");
+        throw new IllegalArgumentException("University ID and Department ID cannot be null");
     }
+    log.info("Assigning university ID: {} to department ID: {}", idUniversite, idDepartement);
+    
+    Universite universite = universiteRepository.findById(idUniversite)
+        .orElseThrow(() -> {
+            log.error("University with ID {} not found", idUniversite);
+            return new NoSuchElementException("University with ID " + idUniversite + " not found");
+        });
+        
+    Departement departement = departementRepository.findById(idDepartement)
+        .orElseThrow(() -> {
+            log.error("Department with ID {} not found", idDepartement);
+            return new NoSuchElementException("Department with ID " + idDepartement + " not found");
+        });
+    
+    // Initialize departments set if null
+    if (universite.getDepartements() == null) {
+        universite.setDepartements(new HashSet<>());
+    }
+    
+    universite.getDepartements().add(departement);
+    universiteRepository.save(universite);
+    log.info("Department with ID {} successfully assigned to university with ID {}", idDepartement, idUniversite);
+  }
 
-    public Set<Departement> retrieveDepartementsByUniversite(Integer idUniversite){
-        log.info("Retrieving departments for university ID: {}", idUniversite);
-        Universite u=universiteRepository.findById(idUniversite).orElse(null);
-        return u.getDepartements();
+  public Set<Departement> retrieveDepartementsByUniversite(Integer idUniversite){
+    if (idUniversite == null) {
+        log.error("Cannot retrieve departments with null university ID");
+        throw new IllegalArgumentException("University ID cannot be null");
     }
+    log.info("Retrieving departments for university ID: {}", idUniversite);
+    
+    Universite universite = universiteRepository.findById(idUniversite)
+        .orElseThrow(() -> {
+            log.error("University with ID {} not found", idUniversite);
+            return new NoSuchElementException("University with ID " + idUniversite + " not found");
+        });
+    
+    if (universite.getDepartements() == null) {
+        log.info("No departments found for university ID: {}", idUniversite);
+        return Collections.emptySet();
+    }
+    
+    return universite.getDepartements();
+  }
 }
