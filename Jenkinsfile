@@ -1,9 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'ademselmani/kaddem'
+        DOCKER_USERNAME = 'ademselmani'
+        DOCKER_PASSWORD = 'adem94038666'
+        COMPOSE_FILE = 'docker-compose.yml'
+    }
+
     tools {
-        jdk 'JAVA_HOME'   
-        maven 'M2_HOME'   
+        jdk 'JAVA_HOME'
+        maven 'M2_HOME'
     }
 
     stages {
@@ -31,19 +38,44 @@ pipeline {
                 sh "mvn sonar:sonar -Dsonar.login=squ_a546fefc5f50e9f80714f82c88e69e723519390a -Dmaven.test.skip=true"
             }
         }
-        stage('Deploy to Nexus'){
-            steps{
+
+        stage('Deploy to Nexus') {
+            steps {
                 sh 'mvn deploy -Dmaven.test.skip=true'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                sh '''
+                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker push $IMAGE_NAME
+                '''
+            }
+        }
+
+        stage('Restart Services with Docker Compose') {
+            steps {
+                sh '''
+                    docker-compose -f $COMPOSE_FILE down || true
+                    docker-compose -f $COMPOSE_FILE up -d
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Build successful!'
+            echo '✅ Build and Deployment successful!'
         }
         failure {
-            echo 'Build failed!'
+            echo '❌ Build or Deployment failed!'
         }
     }
 }
