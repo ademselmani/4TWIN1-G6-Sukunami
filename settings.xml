@@ -12,11 +12,11 @@
     </server>
   </servers>
   
-  <!-- Mirror settings to use Nexus as a proxy for all Maven repositories -->
+  <!-- Mirror settings to use Nexus as a proxy for all Maven repositories except Maven Central -->
   <mirrors>
     <mirror>
       <id>nexus</id>
-      <mirrorOf>*</mirrorOf>
+      <mirrorOf>*,!central</mirrorOf>
       <url>http://192.168.230.129:8081/repository/maven-group/</url>
     </mirror>
   </mirrors>
@@ -28,7 +28,13 @@
       <repositories>
         <repository>
           <id>central</id>
-          <url>http://central</url>
+          <url>https://repo.maven.apache.org/maven2</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>nexus</id>
+          <url>http://192.168.230.129:8081/repository/maven-group/</url>
           <releases><enabled>true</enabled></releases>
           <snapshots><enabled>true</enabled></snapshots>
         </repository>
@@ -36,7 +42,13 @@
       <pluginRepositories>
         <pluginRepository>
           <id>central</id>
-          <url>http://central</url>
+          <url>https://repo.maven.apache.org/maven2</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>nexus</id>
+          <url>http://192.168.230.129:8081/repository/maven-group/</url>
           <releases><enabled>true</enabled></releases>
           <snapshots><enabled>true</enabled></snapshots>
         </pluginRepository>
