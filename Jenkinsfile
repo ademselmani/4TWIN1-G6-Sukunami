@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'mohamedbsila/kaddem'
         COMPOSE_FILE = 'docker-compose.yml'
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
     }
 
     tools {
@@ -45,18 +46,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh 'docker build -t ${IMAGE_NAME}:latest .'
             }
         }
 
         stage('Push Docker Image to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh '''
-                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                        docker push $IMAGE_NAME
-                    '''
-                }
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push ${IMAGE_NAME}:latest'
+                sh 'docker logout'
             }
         }
 
@@ -64,9 +62,16 @@ pipeline {
             steps {
                 sh '''
                     # Force remove existing containers if they exist
-                    docker rm -f kaddem-app mysql-db || true
-                    docker-compose -f $COMPOSE_FILE down || true
-                    docker-compose -f $COMPOSE_FILE up -d
+                    docker container rm -f kaddem-app mysql-db || true
+                    
+                    # Check if docker-compose or docker compose command should be used
+                    if command -v docker-compose &> /dev/null; then
+                        docker-compose -f $COMPOSE_FILE down || true
+                        docker-compose -f $COMPOSE_FILE up -d
+                    else
+                        docker compose -f $COMPOSE_FILE down || true
+                        docker compose -f $COMPOSE_FILE up -d
+                    fi
                 '''
             }
         }
