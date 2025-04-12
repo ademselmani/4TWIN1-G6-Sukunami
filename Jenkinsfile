@@ -63,6 +63,8 @@ pipeline {
         stage('Restart Services with Docker Compose') {
             steps {
                 sh '''
+                    # Force remove existing containers if they exist
+                    docker rm -f kaddem-app mysql-db || true
                     docker-compose -f $COMPOSE_FILE down || true
                     docker-compose -f $COMPOSE_FILE up -d
                 '''
