@@ -14,7 +14,7 @@ services:
       - mysql-data:/var/lib/mysql
 
   kaddem-app:
-    image: moha/kaddem:latest
+    image: mohamedbsila/kaddem:latest
     container_name: kaddem-app
     depends_on:
       - mysql

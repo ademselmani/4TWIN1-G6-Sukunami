@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'moha/kaddem'
-        DOCKER_USERNAME = 'moha'
-        DOCKER_PASSWORD = 'b52100610'
+        IMAGE_NAME = 'mohamedbsila/kaddem'
         COMPOSE_FILE = 'docker-compose.yml'
     }
 
@@ -53,10 +51,12 @@ pipeline {
 
         stage('Push Docker Image to Docker Hub') {
             steps {
-                sh '''
-                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker push $IMAGE_NAME
-                '''
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh '''
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        docker push $IMAGE_NAME
+                    '''
+                }
             }
         }
 
