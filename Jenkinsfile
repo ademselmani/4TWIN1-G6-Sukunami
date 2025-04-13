@@ -119,6 +119,10 @@ EOF
         stage('Restart Services with Docker Compose') {
             steps {
                 sh '''
+                    # Stop any potentially running services on the same ports
+                    docker ps | grep 9091 | awk '{print $1}' | xargs -r docker stop
+                    docker ps | grep 3001 | awk '{print $1}' | xargs -r docker stop
+                    
                     # Force remove existing containers if they exist
                     docker container rm -f kaddem-app mysql-db prometheus grafana || true
                     
@@ -142,11 +146,11 @@ EOF
                     
                     # Check if Prometheus is running
                     echo "Checking Prometheus status:"
-                    curl -s http://localhost:9090/-/healthy || echo "Prometheus not responding"
+                    curl -s http://localhost:9091/-/healthy || echo "Prometheus not responding"
                     
                     # Check if Grafana is running
                     echo "Checking Grafana status:"
-                    curl -s http://localhost:3000/api/health || echo "Grafana not responding"
+                    curl -s http://localhost:3001/api/health || echo "Grafana not responding"
                 '''
             }
         }
@@ -157,8 +161,8 @@ EOF
             echo '✅ Build and Deployment successful!'
             echo 'Access your services at:'
             echo '- Application: http://localhost:8082/kaddem'
-            echo '- Prometheus: http://localhost:9090'
-            echo '- Grafana: http://localhost:3000 (default login: admin/admin)'
+            echo '- Prometheus: http://localhost:9091'
+            echo '- Grafana: http://localhost:3001 (default login: admin/admin)'
         }
         failure {
             echo '❌ Build or Deployment failed!'
