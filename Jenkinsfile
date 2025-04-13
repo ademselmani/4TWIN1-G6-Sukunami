@@ -1,6 +1,6 @@
 pipeline {
     agent any
-  
+stages {  
 stage('GIT') {
             steps {
                 git branch: 'mehdibenhadjyahia_4TWIN1_G6', url: 'https://github.com/ademselmani/4TWIN1-G6-Sukunami.git'
@@ -18,4 +18,5 @@ stage('GIT') {
                 sh 'mvn clean package'
             }
         }
+}
 }
