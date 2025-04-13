@@ -13,10 +13,12 @@ import tn.esprit.spring.kaddem.repositories.EtudiantRepository;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 @Slf4j
 @Service
 public class ContratServiceImpl implements IContratService{
+private static final Logger logger = LogManager.getLogger(ContratServiceImpl.class);
 @Autowired
 ContratRepository contratRepository;
 @Autowired
@@ -29,9 +31,16 @@ ContratRepository contratRepository;
 		return contratRepository.save(ce);
 	}
 
-	public  Contrat addContrat (Contrat ce){
-		return contratRepository.save(ce);
-	}
+	public Contrat addContrat(Contrat ce) {
+    logger.info("Début de l'ajout du contrat : {}", ce);
+    try {
+        logger.debug("Détails du contrat : {}", ce.toString());
+        return contratRepository.save(ce);
+    } catch (Exception e) {
+        logger.error("Erreur lors de l'ajout du contrat", e);
+        throw e;
+    }
+}
 
 	public Contrat retrieveContrat (Integer  idContrat){
 		return contratRepository.findById(idContrat).orElse(null);
