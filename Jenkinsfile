@@ -5,6 +5,7 @@ pipeline {
         IMAGE_NAME = 'mohamedbsila/kaddem'
         COMPOSE_FILE = 'docker-compose.yml'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
+        SONAR_TOKEN = 'sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2'
     }
 
     tools {
@@ -31,7 +32,35 @@ pipeline {
                 sh 'mvn test'
             }
         }
-
+   
+         stage('MVN Sonarqube') {
+                 steps {
+                     sh '''
+                        mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=kaddem \
+                        -Dsonar.projectName="Kaddem Application" \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.login=${SONAR_TOKEN} \
+                        -Dsonar.java.source=1.8 \
+                        -Dsonar.java.target=1.8 \
+                        -Dsonar.sources=src/main/java \
+                        -Dsonar.java.binaries=target/classes \
+                        -Dsonar.maven.plugin.version=3.0.2
+                     '''
+           }
+        }
+        
+        stage('Quality Gate') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    timeout(time: 1, unit: 'MINUTES') {
+                        // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                        // true = set pipeline to UNSTABLE, false = don't
+                        waitForQualityGate abortPipeline: false
+                    }
+                }
+            }
+        }
         stage('Package JAR') {
             steps {
                 sh 'mvn package -DskipTests'
