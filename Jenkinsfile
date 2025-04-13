@@ -35,7 +35,18 @@ pipeline {
         
          stage('MVN Sonarqube') {
                  steps {
-                     sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar -Dsonar.token=sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2 -Dsonar.java.source=1.8 -Dsonar.java.target=1.8 -Dmaven.test.skip=true'
+                     sh '''
+                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar \
+                         -Dsonar.projectKey=kaddem \
+                         -Dsonar.projectName="Kaddem Application" \
+                         -Dsonar.host.url=http://localhost:9000 \
+                         -Dsonar.login=${SONAR_TOKEN} \
+                         -Dsonar.java.source=1.8 \
+                         -Dsonar.java.target=1.8 \
+                         -Dsonar.sources=src/main/java \
+                         -Dsonar.java.binaries=target/classes \
+                         -Dmaven.test.skip=true
+                     '''
            }
         }
         
