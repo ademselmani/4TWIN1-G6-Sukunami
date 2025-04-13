@@ -18,5 +18,10 @@ stage('GIT') {
                 sh 'mvn clean package'
             }
         }
+          stage('MVN SONAREQUBE') {
+            steps {
+                sh 'mvn sonar:sonar -Dsonar.login=sqa_2666cef188b1921cd6389e8c3d060183acf53c95'
+            }
+        }
 }
 }
