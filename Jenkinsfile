@@ -33,20 +33,10 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            mvn sonar:sonar \
-                            -Dsonar.projectKey=kaddem \
-                            -Dsonar.projectName="Kaddem Application" \
-                            -Dsonar.host.url=http://localhost:9000 \
-                            -Dsonar.login=${SONAR_TOKEN}
-                        '''
-                    }
-                }
-            }
+         stage('MVN Sonarqube') {
+                 steps {
+                     sh 'mvn sonar:sonar -Dsonar.token=sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2 -Dmaven.test.skip=true'
+           }
         }
         
         stage('Quality Gate') {
