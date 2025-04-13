@@ -36,16 +36,20 @@ pipeline {
          stage('MVN Sonarqube') {
                  steps {
                      sh '''
-                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar \
-                         -Dsonar.projectKey=kaddem \
-                         -Dsonar.projectName="Kaddem Application" \
-                         -Dsonar.host.url=http://localhost:9000 \
-                         -Dsonar.login=${SONAR_TOKEN} \
-                         -Dsonar.java.source=1.8 \
-                         -Dsonar.java.target=1.8 \
-                         -Dsonar.sources=src/main/java \
-                         -Dsonar.java.binaries=target/classes \
-                         -Dmaven.test.skip=true
+                        # Download SonarScanner 4.2 (compatible with Java 8)
+                        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip -O sonarscanner.zip
+                        unzip -o sonarscanner.zip
+                        
+                        # Run SonarQube Scanner directly
+                        ./sonar-scanner-4.2.0.1873-linux/bin/sonar-scanner \
+                        -Dsonar.projectKey=kaddem \
+                        -Dsonar.projectName="Kaddem Application" \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.login=${SONAR_TOKEN} \
+                        -Dsonar.java.source=1.8 \
+                        -Dsonar.java.target=1.8 \
+                        -Dsonar.sources=src/main/java \
+                        -Dsonar.java.binaries=target/classes
                      '''
            }
         }
