@@ -87,11 +87,40 @@ pipeline {
             }
         }
 
+        stage('Setup Monitoring Configuration') {
+            steps {
+                sh '''
+                    # Ensure prometheus directory exists
+                    mkdir -p prometheus
+                    
+                    # Copy prometheus config if it doesn't exist in workspace
+                    if [ ! -f "prometheus/prometheus.yml" ]; then
+                        echo "Creating default prometheus.yml"
+                        cat > prometheus/prometheus.yml << EOF
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'kaddem-app'
+    metrics_path: '/kaddem/actuator/prometheus'
+    static_configs:
+      - targets: ['kaddem-app:8082']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+EOF
+                    fi
+                '''
+            }
+        }
+
         stage('Restart Services with Docker Compose') {
             steps {
                 sh '''
                     # Force remove existing containers if they exist
-                    docker container rm -f kaddem-app mysql-db || true
+                    docker container rm -f kaddem-app mysql-db prometheus grafana || true
                     
                     # Check if docker-compose or docker compose command should be used
                     if command -v docker-compose &> /dev/null; then
@@ -104,11 +133,32 @@ pipeline {
                 '''
             }
         }
+
+        stage('Verify Monitoring Services') {
+            steps {
+                sh '''
+                    # Wait for services to start up
+                    sleep 10
+                    
+                    # Check if Prometheus is running
+                    echo "Checking Prometheus status:"
+                    curl -s http://localhost:9090/-/healthy || echo "Prometheus not responding"
+                    
+                    # Check if Grafana is running
+                    echo "Checking Grafana status:"
+                    curl -s http://localhost:3000/api/health || echo "Grafana not responding"
+                '''
+            }
+        }
     }
 
     post {
         success {
             echo '✅ Build and Deployment successful!'
+            echo 'Access your services at:'
+            echo '- Application: http://localhost:8082/kaddem'
+            echo '- Prometheus: http://localhost:9090'
+            echo '- Grafana: http://localhost:3000 (default login: admin/admin)'
         }
         failure {
             echo '❌ Build or Deployment failed!'
