@@ -5,7 +5,6 @@ pipeline {
         IMAGE_NAME = 'mohamedbsila/kaddem'
         COMPOSE_FILE = 'docker-compose.yml'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
-        SONAR_TOKEN = 'sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2'
     }
 
     tools {
@@ -30,24 +29,6 @@ pipeline {
         stage('Test') {
             steps {
                 sh 'mvn test'
-            }
-        }
-        
-         stage('MVN Sonarqube') {
-                 steps {
-                     sh 'mvn sonar:sonar -Dsonar.token=sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2 -Dmaven.test.skip=true'
-           }
-        }
-        
-        stage('Quality Gate') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    timeout(time: 1, unit: 'MINUTES') {
-                        // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                        // true = set pipeline to UNSTABLE, false = don't
-                        waitForQualityGate abortPipeline: false
-                    }
-                }
             }
         }
 
