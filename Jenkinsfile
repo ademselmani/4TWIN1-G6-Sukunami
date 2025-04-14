@@ -27,11 +27,6 @@ pipeline {
                     }
                 }
 
-                        stage('MVN SONARQUBE') {
-                            steps {
-                                sh "mvn sonar:sonar -Dsonar.login=sqa_12defa566ba92b9f8ebed75b4609633e30d50a64 -Dmaven.test.skip=true"
-                            }
-                        }
 
         stage('Package JAR') {
             steps {
@@ -39,6 +34,11 @@ pipeline {
             }
         }
 
+                        stage('MVN SONARQUBE') {
+                            steps {
+                                sh "mvn sonar:sonar -Dsonar.login=sqa_939a38d35cea7296776cb6767e7cd9c95f09a986 -Dmaven.test.skip=true"
+                            }
+                        }
 
 }
 }
