@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     tools {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
@@ -20,11 +21,11 @@ pipeline {
             }
         }
 
-        stage('Run Unit Tests') {
-            steps {
-                sh 'mvn test'
-            }
-        }
+                stage('Run Unit Tests') {
+                    steps {
+                        sh 'mvn test'
+                    }
+                }
 
         stage('Package JAR') {
             steps {
@@ -33,6 +34,5 @@ pipeline {
         }
 
 
-
-    }
+}
 }
