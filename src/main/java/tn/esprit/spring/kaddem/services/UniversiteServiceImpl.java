@@ -29,27 +29,66 @@ public class UniversiteServiceImpl implements IUniversiteService{
     return (List<Universite>) universiteRepository.findAll();
     }
 
- public    Universite addUniversite (Universite  u){
+ public    Universite addUniversite (Universite u){
     if (u == null) {
         log.error("Cannot add null university");
         throw new IllegalArgumentException("University cannot be null");
     }
+    
+    // Validate required fields
+    if (u.getNomUniv() == null || u.getNomUniv().trim().isEmpty()) {
+        log.error("Cannot add university with empty name");
+        throw new IllegalArgumentException("University name cannot be empty");
+    }
+    
+    // Trim string values to ensure they're not exceeding DB limits
+    if (u.getImagePath() != null && u.getImagePath().length() > 2000) {
+        log.warn("Image URL too long ({}), truncating to 2000 characters", u.getImagePath().length());
+        u.setImagePath(u.getImagePath().substring(0, 2000));
+    }
+    
+    if (u.getDescription() != null && u.getDescription().length() > 1000) {
+        log.warn("Description too long ({}), truncating to 1000 characters", u.getDescription().length());
+        u.setDescription(u.getDescription().substring(0, 1000));
+    }
+    
     log.info("Adding a new university: {}", u.getNomUniv());
-    return  (universiteRepository.save(u));
-    }
+    return (universiteRepository.save(u));
+}
 
- public    Universite updateUniversite (Universite  u){
-     if (u == null) {
-        log.error("Cannot update null university");
-        throw new IllegalArgumentException("University cannot be null");
-     }
-     if (u.getIdUniv() == null) {
-        log.error("Cannot update university with null ID");
-        throw new IllegalArgumentException("University ID cannot be null for update operation");
-     }
-     log.info("Updating university with ID: {}", u.getIdUniv());
-     return  (universiteRepository.save(u));
+ public    Universite updateUniversite (Universite u){
+    if (u == null) {
+       log.error("Cannot update null university");
+       throw new IllegalArgumentException("University cannot be null");
     }
+    if (u.getIdUniv() == null) {
+       log.error("Cannot update university with null ID");
+       throw new IllegalArgumentException("University ID cannot be null for update operation");
+    }
+    
+    // Check if university exists before updating
+    try {
+        universiteRepository.findById(u.getIdUniv())
+            .orElseThrow(() -> new NoSuchElementException("University with ID " + u.getIdUniv() + " not found"));
+    } catch (NoSuchElementException e) {
+        log.error("University with ID {} not found for update", u.getIdUniv());
+        throw e;
+    }
+    
+    // Trim string values to ensure they're not exceeding DB limits
+    if (u.getImagePath() != null && u.getImagePath().length() > 2000) {
+        log.warn("Image URL too long ({}), truncating to 2000 characters", u.getImagePath().length());
+        u.setImagePath(u.getImagePath().substring(0, 2000));
+    }
+    
+    if (u.getDescription() != null && u.getDescription().length() > 1000) {
+        log.warn("Description too long ({}), truncating to 1000 characters", u.getDescription().length());
+        u.setDescription(u.getDescription().substring(0, 1000));
+    }
+    
+    log.info("Updating university with ID: {}", u.getIdUniv());
+    return (universiteRepository.save(u));
+}
 
   public Universite retrieveUniversite (Integer idUniversite){
     if (idUniversite == null) {

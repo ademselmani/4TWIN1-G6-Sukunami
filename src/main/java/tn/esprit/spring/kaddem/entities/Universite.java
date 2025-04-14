@@ -13,6 +13,7 @@ public class Universite implements Serializable{
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer idUniv;
     private String nomUniv;
+    @Column(length = 2000)
     private String imagePath;
     @Column(length = 1000)
     private String description;
