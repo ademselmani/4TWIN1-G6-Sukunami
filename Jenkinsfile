@@ -32,11 +32,7 @@ pipeline {
             }
         }
 
-        stage('MVN SONARQUBE') {
-            steps {
-                sh "mvn sonar:sonar -Dsonar.login=squ_ecf6cf5b28cf7330031e8fdc913940a1efc5dcca -Dmaven.test.skip=true"
-            }
-        }
+
 
     }
 }
