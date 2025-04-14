@@ -6,7 +6,7 @@ pipeline {
         FRONTEND_IMAGE_NAME = 'mohamedbsila/kaddem-frontend'
         COMPOSE_FILE = 'docker-compose.yml'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
-        SONAR_TOKEN = 'sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2'
+        SONAR_TOKEN = 'sqa_6ece41ddc05bc184ac830641117f06582781fa7b'
     }
 
     tools {
