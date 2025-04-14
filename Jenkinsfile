@@ -137,6 +137,10 @@ EOF
                     # Force remove existing containers if they exist
                     docker container rm -f kaddem-app mysql-db prometheus grafana frontend-app || true
                     
+                    # Clear Docker cache for frontend images to ensure pulling fresh images
+                    docker image rm -f ${FRONTEND_IMAGE_NAME}:latest || true
+                    docker pull ${FRONTEND_IMAGE_NAME}:latest
+                    
                     # Check if docker-compose or docker compose command should be used
                     if command -v docker-compose &> /dev/null; then
                         docker-compose -f $COMPOSE_FILE down || true

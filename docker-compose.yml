@@ -29,7 +29,7 @@ services:
     restart: always
     
   frontend:
-    build: ./frontend
+    image: mohamedbsila/kaddem-frontend:latest
     container_name: frontend-app
     ports:
       - "80:80"
