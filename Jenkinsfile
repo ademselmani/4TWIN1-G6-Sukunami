@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = 'mohamedbsila/kaddem'
         COMPOSE_FILE = 'docker-compose.yml'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
-        SONAR_TOKEN = 'sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2'
+        SONAR_TOKEN = 'sqa_e807ec4e65827db1f5474b489628b113d16db430'
     }
 
     tools {
