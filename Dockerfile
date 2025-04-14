@@ -1,4 +1,5 @@
 FROM openjdk:17
-EXPOSE 8089
-COPY kaddem-0.0.1.jar /app/kaddem-0.0.1.jar
-ENTRYPOINT ["java", "-jar", "/kaddem-0.0.1.jar"]
+WORKDIR /app
+COPY target/kaddem-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8082
+ENTRYPOINT ["java", "-jar", "app.jar"]
