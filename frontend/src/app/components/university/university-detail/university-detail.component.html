@@ -36,7 +36,7 @@
   </div>
 
   <!-- Departments Section -->
-  <div *ngIf="university?.departements && university.departements.length > 0" class="card mt-4">
+  <div *ngIf="university && university.departements && university.departements.length > 0" class="card mt-4">
     <div class="card-header bg-success text-white">
       <h5 class="mb-0">Departments ({{ university.departements.length }})</h5>
     </div>
@@ -52,7 +52,7 @@
     </div>
   </div>
 
-  <div *ngIf="university?.departements?.length === 0 || !university?.departements" class="card mt-4">
+  <div *ngIf="university && (!university.departements || university.departements.length === 0)" class="card mt-4">
     <div class="card-header bg-warning">
       <h5 class="mb-0">Departments</h5>
     </div>

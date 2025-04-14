@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { University } from '../../../models/university.model';
 import { UniversityService } from '../../../services/university.service';
 
 @Component({
   selector: 'app-university-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './university-list.component.html',
   styleUrls: ['./university-list.component.css']
 })
@@ -69,43 +70,45 @@ export class UniversityListComponent implements OnInit {
     this.editingUniversity = null;
   }
 
-  updateUniversity(): void {
-    if (!this.editingUniversity) return;
-    
-    this.loading = true;
-    this.universityService.updateUniversity(this.editingUniversity).subscribe({
-      next: (data) => {
-        const index = this.universities.findIndex(u => u.idUniv === data.idUniv);
-        if (index !== -1) {
-          this.universities[index] = data;
-        }
-        this.editingUniversity = null;
-        this.loading = false;
-        this.error = '';
-      },
-      error: (err) => {
-        this.error = 'Error updating university';
-        console.error(err);
-        this.loading = false;
-      }
-    });
-  }
-
-  deleteUniversity(id: number): void {
-    if (confirm('Are you sure you want to delete this university?')) {
+  saveEdit(): void {
+    if (this.editingUniversity) {
       this.loading = true;
-      this.universityService.deleteUniversity(id).subscribe({
-        next: () => {
-          this.universities = this.universities.filter(u => u.idUniv !== id);
+      this.universityService.updateUniversity(this.editingUniversity).subscribe({
+        next: (data) => {
+          const index = this.universities.findIndex(u => u.idUniv === this.editingUniversity!.idUniv);
+          if (index !== -1) {
+            this.universities[index] = data;
+          }
+          this.editingUniversity = null;
           this.loading = false;
           this.error = '';
         },
         error: (err) => {
-          this.error = 'Error deleting university';
+          this.error = 'Error updating university';
           console.error(err);
           this.loading = false;
         }
       });
     }
+  }
+
+  deleteUniversity(id: number | undefined): void {
+    if (!id) {
+      this.error = 'Cannot delete: Invalid university ID';
+      return;
+    }
+    
+    this.loading = true;
+    this.universityService.deleteUniversity(id).subscribe({
+      next: () => {
+        this.universities = this.universities.filter(u => u.idUniv !== id);
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = `Failed to delete university: ${err.message}`;
+        this.loading = false;
+        setTimeout(() => this.error = '', 3000);
+      }
+    });
   }
 } 

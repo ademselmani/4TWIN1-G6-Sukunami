@@ -48,7 +48,7 @@
         <p>No universities found. Add one to get started.</p>
       </div>
       
-      <table *ngIf="universities.length > 0" class="table table-striped table-hover">
+      <table *ngIf="universities && universities.length > 0" class="table table-striped table-hover">
         <thead>
           <tr>
             <th scope="col">ID</th>
@@ -58,44 +58,60 @@
         </thead>
         <tbody>
           <tr *ngFor="let university of universities">
-            <!-- Not editing mode -->
-            <ng-container *ngIf="editingUniversity?.idUniv !== university.idUniv">
-              <td>{{ university.idUniv }}</td>
-              <td>{{ university.nomUniv }}</td>
-              <td>
-                <div class="btn-group" role="group">
-                  <button class="btn btn-sm btn-warning me-1" (click)="startEdit(university)">
-                    <i class="bi bi-pencil-square"></i> Edit
-                  </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteUniversity(university.idUniv!)">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                </div>
-              </td>
-            </ng-container>
-            
-            <!-- Editing mode -->
-            <ng-container *ngIf="editingUniversity?.idUniv === university.idUniv">
-              <td>{{ university.idUniv }}</td>
-              <td>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  [(ngModel)]="editingUniversity.nomUniv" 
-                  required
+            <td *ngIf="editingUniversity?.idUniv !== university.idUniv">{{ university.idUniv }}</td>
+            <td *ngIf="editingUniversity?.idUniv !== university.idUniv">{{ university.nomUniv }}</td>
+            <td *ngIf="editingUniversity?.idUniv === university.idUniv">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editingUniversity.nomUniv"
+                placeholder="University Name"
+              />
+            </td>
+            <td>
+              <div class="btn-group">
+                <!-- View button - always visible except when editing -->
+                <button
+                  *ngIf="editingUniversity?.idUniv !== university.idUniv && university.idUniv"
+                  class="btn btn-primary btn-sm"
+                  [routerLink]="['/universities', university.idUniv]"
                 >
-              </td>
-              <td>
-                <div class="btn-group" role="group">
-                  <button class="btn btn-sm btn-success me-1" (click)="updateUniversity()">
-                    <i class="bi bi-check-circle"></i> Save
-                  </button>
-                  <button class="btn btn-sm btn-secondary" (click)="cancelEdit()">
-                    <i class="bi bi-x-circle"></i> Cancel
-                  </button>
-                </div>
-              </td>
-            </ng-container>
+                  View
+                </button>
+                <!-- Edit button - only visible when not editing this university -->
+                <button
+                  *ngIf="editingUniversity?.idUniv !== university.idUniv"
+                  class="btn btn-warning btn-sm"
+                  (click)="startEdit(university)"
+                >
+                  Edit
+                </button>
+                <!-- Delete button - only visible when not editing this university -->
+                <button
+                  *ngIf="editingUniversity?.idUniv !== university.idUniv && university.idUniv"
+                  class="btn btn-danger btn-sm"
+                  (click)="deleteUniversity(university.idUniv!)"
+                >
+                  Delete
+                </button>
+                <!-- Save button - only visible when editing this university -->
+                <button
+                  *ngIf="editingUniversity?.idUniv === university.idUniv"
+                  class="btn btn-success btn-sm"
+                  (click)="saveEdit()"
+                >
+                  Save
+                </button>
+                <!-- Cancel button - only visible when editing this university -->
+                <button
+                  *ngIf="editingUniversity?.idUniv === university.idUniv"
+                  class="btn btn-secondary btn-sm"
+                  (click)="cancelEdit()"
+                >
+                  Cancel
+                </button>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
