@@ -6,13 +6,12 @@ pipeline {
         FRONTEND_IMAGE_NAME = 'mohamedbsila/kaddem-frontend'
         COMPOSE_FILE = 'docker-compose.yml'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
-        SONAR_TOKEN = 'sqa_e807ec4e65827db1f5474b489628b113d16db430'
+        SONAR_TOKEN = 'sqa_1e5900c71d8156d237b159cd4f4494f5f6fc9fa2'
     }
 
     tools {
         jdk 'JAVA_HOME'   
         maven 'M2_HOME'   
-        nodejs 'NODE_HOME'
     }
 
     stages {
@@ -78,15 +77,6 @@ pipeline {
         stage('Build Backend Docker Image') {
             steps {
                 sh 'docker build -t ${IMAGE_NAME}:latest .'
-            }
-        }
-        
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
             }
         }
         
