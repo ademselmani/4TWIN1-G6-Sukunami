@@ -18,13 +18,11 @@ export class DepartmentListComponent implements OnInit {
   departments: Department[] = [];
   universities: University[] = [];
   newDepartment: Department = { nomDepart: '' };
-  selectedDepartment: Department | null = null;
-  selectedDepartmentId: number | null = null;
-  selectedUniversityId: number | null = null;
+  selectedDepartmentId: number | undefined;
+  selectedUniversityId: number | undefined;
   isLoading = false;
-  isEditing = false;
-  error: string | null = null;
-  successMessage: string | null = null;
+  error = '';
+  editingDepartment: Department | null = null;
 
   constructor(
     private departmentService: DepartmentService,
@@ -39,142 +37,140 @@ export class DepartmentListComponent implements OnInit {
 
   loadDepartments(): void {
     this.isLoading = true;
-    this.error = null;
-    this.departmentService.getAllDepartments().subscribe({
-      next: (data) => {
-        this.departments = data;
+    this.error = '';
+    
+    this.departmentService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
         this.isLoading = false;
       },
-      error: (err) => {
-        this.error = 'Failed to load departments: ' + err;
+      error: (err: any) => {
+        this.error = 'Failed to load departments: ' + err.message;
         this.isLoading = false;
       }
     });
   }
 
   loadUniversities(): void {
-    this.isLoading = true;
-    this.error = null;
     this.universityService.getAllUniversities().subscribe({
-      next: (data) => {
-        this.universities = data;
-        this.isLoading = false;
+      next: (universities: University[]) => {
+        this.universities = universities;
       },
-      error: (err) => {
-        this.error = 'Failed to load universities: ' + err;
-        this.isLoading = false;
+      error: (err: any) => {
+        this.error = 'Failed to load universities: ' + err.message;
       }
     });
   }
 
-  onSubmit(): void {
-    this.isLoading = true;
-    this.error = null;
-    
-    if (this.isEditing && this.selectedDepartment) {
-      const updatedDepartment: Department = {
-        ...this.selectedDepartment,
-        nomDepart: this.selectedDepartment.nomDepart
-      };
-      
-      this.departmentService.updateDepartment(updatedDepartment).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.successMessage = 'Department updated successfully';
-          this.resetForm();
-          this.loadDepartments();
-          setTimeout(() => this.successMessage = null, 3000);
-        },
-        error: (err) => {
-          this.error = 'Failed to update department: ' + err;
-          this.isLoading = false;
-        }
-      });
-    } else {
-      this.departmentService.addDepartment(this.newDepartment).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.successMessage = 'Department added successfully';
-          this.resetForm();
-          this.loadDepartments();
-          setTimeout(() => this.successMessage = null, 3000);
-        },
-        error: (err) => {
-          this.error = 'Failed to add department: ' + err;
-          this.isLoading = false;
-        }
-      });
-    }
-  }
-
-  assignDepartmentToUniversity(): void {
-    if (!this.selectedDepartmentId || !this.selectedUniversityId) {
-      this.error = 'Please select both a department and a university';
+  addDepartment(): void {
+    if (!this.newDepartment.nomDepart.trim()) {
+      this.error = 'Department name is required';
       return;
     }
 
     this.isLoading = true;
-    this.error = null;
-
-    this.departmentService.assignDepartmentToUniversity(
-      this.selectedDepartmentId, 
-      this.selectedUniversityId
-    ).subscribe({
-      next: () => {
+    this.error = '';
+    
+    this.departmentService.createDepartment(this.newDepartment).subscribe({
+      next: (department) => {
+        this.departments.push(department);
+        this.newDepartment = { nomDepart: '' };
         this.isLoading = false;
-        this.successMessage = 'Department assigned to university successfully';
-        this.selectedDepartmentId = null;
-        this.selectedUniversityId = null;
-        this.loadDepartments();
-        setTimeout(() => this.successMessage = null, 3000);
       },
       error: (err) => {
-        this.error = 'Failed to assign department to university: ' + err;
+        this.error = 'Failed to add department: ' + err.message;
         this.isLoading = false;
       }
     });
   }
 
-  editDepartment(department: Department): void {
-    this.isEditing = true;
-    this.selectedDepartment = { ...department };
+  startEdit(department: Department): void {
+    this.editingDepartment = { ...department };
   }
 
-  viewDepartment(id: number): void {
-    this.router.navigate(['/departments', id]);
+  cancelEdit(): void {
+    this.editingDepartment = null;
+  }
+
+  saveDepartment(): void {
+    if (!this.editingDepartment || !this.editingDepartment.idDepart) return;
+    
+    this.isLoading = true;
+    this.error = '';
+    
+    this.departmentService.updateDepartment(
+      this.editingDepartment.idDepart, 
+      this.editingDepartment
+    ).subscribe({
+      next: (updatedDepartment) => {
+        const index = this.departments.findIndex(d => d.idDepart === updatedDepartment.idDepart);
+        if (index !== -1) {
+          this.departments[index] = updatedDepartment;
+        }
+        this.editingDepartment = null;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to update department: ' + err.message;
+        this.isLoading = false;
+      }
+    });
   }
 
   deleteDepartment(id: number): void {
     if (confirm('Are you sure you want to delete this department?')) {
       this.isLoading = true;
-      this.error = null;
+      this.error = '';
       
       this.departmentService.deleteDepartment(id).subscribe({
         next: () => {
+          this.departments = this.departments.filter(d => d.idDepart !== id);
           this.isLoading = false;
-          this.successMessage = 'Department deleted successfully';
-          this.loadDepartments();
-          setTimeout(() => this.successMessage = null, 3000);
         },
         error: (err) => {
-          this.error = 'Failed to delete department: ' + err;
+          this.error = 'Failed to delete department: ' + err.message;
           this.isLoading = false;
         }
       });
     }
   }
 
-  resetForm(): void {
-    this.newDepartment = { nomDepart: '' };
-    this.selectedDepartment = null;
-    this.isEditing = false;
+  assignToUniversity(): void {
+    if (!this.selectedDepartmentId || !this.selectedUniversityId) {
+      this.error = 'Please select both department and university';
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = '';
+    
+    this.departmentService.assignDepartmentToUniversity(
+      this.selectedDepartmentId, 
+      this.selectedUniversityId
+    ).subscribe({
+      next: (updatedDepartment) => {
+        // Update the department in the list
+        const index = this.departments.findIndex(d => d.idDepart === updatedDepartment.idDepart);
+        if (index !== -1) {
+          this.departments[index] = updatedDepartment;
+        }
+        // Reset selections
+        this.selectedDepartmentId = undefined;
+        this.selectedUniversityId = undefined;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to assign department to university: ' + err.message;
+        this.isLoading = false;
+      }
+    });
   }
 
-  cancelEdit(): void {
-    this.resetForm();
+  viewDetails(departmentId: number): void {
+    this.router.navigate(['/departments', departmentId]);
   }
 
   clearError(): void {
-    this.error = null;
+    this.error = '';
   }
 } 

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { University } from '../../../models/university.model';
 import { UniversityService } from '../../../services/university.service';
 
@@ -14,13 +15,15 @@ import { UniversityService } from '../../../services/university.service';
 })
 export class UniversityDetailComponent implements OnInit {
   university: University | null = null;
-  loading = false;
-  error = '';
+  isLoading = false;
+  errorMessage = '';
+  private googleMapsApiKey = 'AIzaSyDPoje0mf_-GQACKolMQepw3PRRG0McqS0';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private universityService: UniversityService
+    private universityService: UniversityService,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -32,21 +35,32 @@ export class UniversityDetailComponent implements OnInit {
   }
 
   loadUniversity(id: number): void {
-    this.loading = true;
+    this.isLoading = true;
     this.universityService.getUniversityById(id).subscribe({
       next: (data) => {
         this.university = data;
-        this.loading = false;
+        this.isLoading = false;
       },
       error: (err) => {
-        this.error = 'Error loading university details';
+        this.errorMessage = 'Error loading university details';
         console.error(err);
-        this.loading = false;
+        this.isLoading = false;
       }
     });
   }
 
   goBack(): void {
     this.router.navigate(['/universities']);
+  }
+  
+  getSafeMapUrl(): SafeResourceUrl {
+    if (!this.university || !this.university.location) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+    }
+    
+    const encodedLocation = encodeURIComponent(this.university.location);
+    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${this.googleMapsApiKey}&q=${encodedLocation}`;
+    
+    return this.sanitizer.bypassSecurityTrustResourceUrl(mapUrl);
   }
 } 

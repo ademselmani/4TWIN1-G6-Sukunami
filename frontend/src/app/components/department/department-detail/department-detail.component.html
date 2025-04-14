@@ -6,71 +6,80 @@
         <i class="bi bi-arrow-left"></i> Back to List
       </button>
     </div>
-
+    
     <div class="card-body">
       <!-- Error Alert -->
-      <div *ngIf="error" class="alert alert-danger" role="alert">
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
         {{ error }}
+        <button type="button" class="btn-close" aria-label="Close" (click)="error = ''"></button>
       </div>
 
       <!-- Loading Spinner -->
       <div *ngIf="isLoading" class="d-flex justify-content-center my-3">
-        <div class="spinner-border text-primary" role="status">
+        <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
 
       <!-- Department Details -->
-      <div *ngIf="department && !isLoading">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
-                <h4>Basic Information</h4>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-6">
-                    <p><strong>ID:</strong> {{ department.idDepart }}</p>
-                    <p><strong>Name:</strong> {{ department.nomDepart }}</p>
-                  </div>
-                  <div class="col-md-6">
-                    <p><strong>University:</strong> {{ department.universite?.nomUniv || 'Not assigned' }}</p>
-                  </div>
-                </div>
+      <div *ngIf="!isLoading && department">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h4>Basic Information</h4>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-3 fw-bold">ID:</div>
+              <div class="col-md-9">{{ department.idDepart }}</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-3 fw-bold">Name:</div>
+              <div class="col-md-9">{{ department.nomDepart }}</div>
+            </div>
+            <div class="row">
+              <div class="col-md-3 fw-bold">University:</div>
+              <div class="col-md-9">
+                <span *ngIf="department.universite">{{ department.universite.nomUniv }}</span>
+                <span *ngIf="!department.universite" class="text-muted">Not assigned to any university</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Students in Department -->
-        <div class="row mt-4">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
-                <h4>Students</h4>
-              </div>
-              <div class="card-body">
-                <div *ngIf="!department.etudiants || department.etudiants.length === 0" class="alert alert-info">
-                  No students assigned to this department.
-                </div>
-                <ul *ngIf="department.etudiants && department.etudiants.length > 0" class="list-group">
-                  <li *ngFor="let student of department.etudiants" class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong>{{ student.nomE }} {{ student.prenomE }}</strong>
-                        <span *ngIf="student.op" class="badge bg-info ms-2">{{ student.op }}</span>
-                      </div>
-                      <button class="btn btn-sm btn-outline-primary" [routerLink]="['/students', student.idEtudiant]">
-                        View Details
-                      </button>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+        <!-- Students List -->
+        <div class="card">
+          <div class="card-header">
+            <h4>Students</h4>
+          </div>
+          <div class="card-body">
+            <div *ngIf="!department.etudiants || department.etudiants.length === 0" class="alert alert-info">
+              No students assigned to this department.
             </div>
+            <table *ngIf="department.etudiants && department.etudiants.length > 0" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Option</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let student of department.etudiants">
+                  <td>{{ student.idEtudiant }}</td>
+                  <td>{{ student.prenomE }}</td>
+                  <td>{{ student.nomE }}</td>
+                  <td>{{ student.op || 'N/A' }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
+      </div>
+
+      <!-- Not Found -->
+      <div *ngIf="!isLoading && !department && !error" class="alert alert-warning">
+        Department not found or has been deleted.
       </div>
     </div>
   </div>

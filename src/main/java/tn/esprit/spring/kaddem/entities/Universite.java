@@ -13,9 +13,15 @@ public class Universite implements Serializable{
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer idUniv;
     private String nomUniv;
+    private String imagePath;
+    @Column(length = 1000)
+    private String description;
+    private String location;
+    
     @OneToMany(cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Departement> departements;
+    
     public Universite() {
         // TODO Auto-generated constructor stub
     }
@@ -30,6 +36,14 @@ public class Universite implements Serializable{
         this.idUniv = idUniv;
         this.nomUniv = nomUniv;
     }
+    
+    public Universite(String nomUniv, String imagePath, String description, String location) {
+        super();
+        this.nomUniv = nomUniv;
+        this.imagePath = imagePath;
+        this.description = description;
+        this.location = location;
+    }
 
     public Set<Departement> getDepartements() {
         return departements;
@@ -42,14 +56,40 @@ public class Universite implements Serializable{
     public Integer getIdUniv() {
         return idUniv;
     }
+    
     public void setIdUniv(Integer idUniv) {
         this.idUniv = idUniv;
     }
+    
     public String getNomUniv() {
         return nomUniv;
     }
+    
     public void setNomUniv(String nomUniv) {
         this.nomUniv = nomUniv;
     }
-
+    
+    public String getImagePath() {
+        return imagePath;
+    }
+    
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
+    
+    public void setLocation(String location) {
+        this.location = location;
+    }
 }

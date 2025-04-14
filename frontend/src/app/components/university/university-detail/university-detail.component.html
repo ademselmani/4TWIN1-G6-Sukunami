@@ -1,63 +1,72 @@
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>University Details</h2>
-    <button class="btn btn-secondary" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i> Back to List
-    </button>
-  </div>
-  
-  <!-- Error Alert -->
-  <div *ngIf="error" class="alert alert-danger">
-    {{ error }}
-  </div>
-  
-  <!-- Loading Spinner -->
-  <div *ngIf="loading" class="text-center">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-
-  <!-- University Details Card -->
-  <div *ngIf="university && !loading" class="card">
-    <div class="card-header bg-info text-white">
-      <h5 class="mb-0">{{ university.nomUniv }}</h5>
-    </div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-3 fw-bold">ID:</div>
-        <div class="col-md-9">{{ university.idUniv }}</div>
+  <div class="row">
+    <div class="col-12">
+      <!-- Error Alert -->
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
       </div>
-      <div class="row mb-3">
-        <div class="col-md-3 fw-bold">Name:</div>
-        <div class="col-md-9">{{ university.nomUniv }}</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Departments Section -->
-  <div *ngIf="university && university.departements && university.departements.length > 0" class="card mt-4">
-    <div class="card-header bg-success text-white">
-      <h5 class="mb-0">Departments ({{ university.departements.length }})</h5>
-    </div>
-    <div class="card-body">
-      <ul class="list-group">
-        <li *ngFor="let dept of university.departements" class="list-group-item">
+      <!-- Loading Spinner -->
+      <div *ngIf="isLoading" class="d-flex justify-content-center my-5">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <!-- University Details -->
+      <div *ngIf="university && !isLoading" class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3>{{ university.nomUniv }}</h3>
+          <button class="btn btn-secondary" (click)="goBack()">Back to List</button>
+        </div>
+        <div class="card-body">
           <div class="row">
-            <div class="col-md-3">ID: {{ dept.idDepart }}</div>
-            <div class="col-md-9">{{ dept.nomDepart }}</div>
+            <!-- University Image -->
+            <div class="col-md-4 mb-3">
+              <img *ngIf="university.imagePath" [src]="university.imagePath" class="img-fluid rounded" alt="{{ university.nomUniv }}">
+              <img *ngIf="!university.imagePath" src="assets/images/university-placeholder.jpg" class="img-fluid rounded" alt="{{ university.nomUniv }}">
+            </div>
+            
+            <!-- University Info -->
+            <div class="col-md-8">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>ID:</strong> {{ university.idUniv }}</li>
+                <li class="list-group-item"><strong>Name:</strong> {{ university.nomUniv }}</li>
+                <li class="list-group-item" *ngIf="university.location"><strong>Location:</strong> {{ university.location }}</li>
+                <li class="list-group-item" *ngIf="university.description"><strong>Description:</strong> {{ university.description }}</li>
+              </ul>
+            </div>
           </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div *ngIf="university && (!university.departements || university.departements.length === 0)" class="card mt-4">
-    <div class="card-header bg-warning">
-      <h5 class="mb-0">Departments</h5>
-    </div>
-    <div class="card-body">
-      <p class="text-center">No departments assigned to this university yet.</p>
+          
+          <!-- Google Maps -->
+          <div class="row mt-4" *ngIf="university.location">
+            <div class="col-12">
+              <h4 class="mb-3">Location</h4>
+              <div class="ratio ratio-16x9">
+                <iframe [src]="getSafeMapUrl()" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+            </div>
+          </div>
+          
+          <!-- University Departments -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <h4 class="mb-3">Departments</h4>
+              <div *ngIf="university.departements && university.departements.length > 0">
+                <ul class="list-group">
+                  <li class="list-group-item" *ngFor="let department of university.departements">
+                    {{ department.nomDepart }}
+                  </li>
+                </ul>
+              </div>
+              <div *ngIf="!university.departements || university.departements.length === 0" class="alert alert-info">
+                No departments assigned to this university.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div> 

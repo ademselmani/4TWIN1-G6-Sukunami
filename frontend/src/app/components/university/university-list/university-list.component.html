@@ -31,6 +31,39 @@
             required
           >
         </div>
+        <div class="mb-3">
+          <label for="imagePath" class="form-label">Image URL</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="imagePath" 
+            name="imagePath"
+            [(ngModel)]="newUniversity.imagePath" 
+            placeholder="https://example.com/image.jpg"
+          >
+        </div>
+        <div class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="location" 
+            name="location"
+            [(ngModel)]="newUniversity.location" 
+            placeholder="City, Country"
+          >
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea 
+            class="form-control" 
+            id="description" 
+            name="description"
+            [(ngModel)]="newUniversity.description" 
+            rows="3"
+            placeholder="Brief description of the university"
+          ></textarea>
+        </div>
         <button type="submit" class="btn btn-primary" [disabled]="loading">
           <i class="bi bi-plus-circle me-1"></i> Add University
         </button>
@@ -52,22 +85,70 @@
         <thead>
           <tr>
             <th scope="col">ID</th>
+            <th scope="col">Image</th>
             <th scope="col">Name</th>
+            <th scope="col">Location</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let university of universities">
             <td *ngIf="editingUniversity?.idUniv !== university.idUniv">{{ university.idUniv }}</td>
-            <td *ngIf="editingUniversity?.idUniv !== university.idUniv">{{ university.nomUniv }}</td>
+            
+            <!-- Image cell - display mode -->
+            <td *ngIf="editingUniversity?.idUniv !== university.idUniv">
+              <img *ngIf="university.imagePath" [src]="university.imagePath" class="img-thumbnail" style="max-width: 50px; max-height: 50px;" alt="University image">
+              <span *ngIf="!university.imagePath">No image</span>
+            </td>
+            
+            <!-- Image cell - edit mode -->
             <td *ngIf="editingUniversity?.idUniv === university.idUniv">
               <input
                 type="text"
                 class="form-control"
+                [(ngModel)]="editingUniversity!.imagePath"
+                placeholder="Image URL"
+              />
+            </td>
+            
+            <!-- Name cell - display mode -->
+            <td *ngIf="editingUniversity?.idUniv !== university.idUniv">
+              {{ university.nomUniv }}
+              <small *ngIf="university.location" class="text-muted d-block">{{ university.location }}</small>
+            </td>
+            
+            <!-- Name cell - edit mode -->
+            <td *ngIf="editingUniversity?.idUniv === university.idUniv">
+              <input
+                type="text"
+                class="form-control mb-2"
                 [(ngModel)]="editingUniversity!.nomUniv"
                 placeholder="University Name"
               />
             </td>
+            
+            <!-- Location cell - display mode -->
+            <td *ngIf="editingUniversity?.idUniv !== university.idUniv">
+              {{ university.location || 'Not specified' }}
+            </td>
+            
+            <!-- Location cell - edit mode -->
+            <td *ngIf="editingUniversity?.idUniv === university.idUniv">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editingUniversity!.location"
+                placeholder="Location"
+              />
+              <textarea
+                class="form-control mt-2"
+                [(ngModel)]="editingUniversity!.description"
+                placeholder="Description"
+                rows="2"
+              ></textarea>
+            </td>
+            
+            <!-- Actions cell - same as before -->
             <td>
               <div class="btn-group">
                 <!-- View button - always visible except when editing -->

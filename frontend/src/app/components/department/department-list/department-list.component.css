@@ -1,6 +1,6 @@
 .card {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
   margin-bottom: 20px;
 }
 
@@ -10,11 +10,11 @@
 
 .card-header {
   background-color: #f8f9fa;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .btn-group .btn {
-  margin-right: 5px;
+  margin-right: 2px;
 }
 
 .btn-group .btn:last-child {
@@ -36,9 +36,13 @@
 }
 
 /* Styling for form elements */
-.form-control:focus, .form-select:focus {
-  border-color: #80bdff;
+.form-control.ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+.form-control:focus {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: #86b7fe;
 }
 
 /* Button styling */

@@ -1,5 +1,10 @@
+import { Department } from './department.model';
+
 export interface University {
-  idUniv?: number;
+  idUniv: number;
   nomUniv: string;
-  departements?: any[];
+  imagePath?: string;
+  description?: string;
+  location?: string;
+  departements?: Department[];
 } 

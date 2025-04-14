@@ -3,8 +3,8 @@ import { University } from './university.model';
 export interface Department {
   idDepart?: number;
   nomDepart: string;
+  etudiants?: any[]; // Using any[] to avoid circular dependency
   universite?: University;
-  etudiants?: Etudiant[];
 }
 
 // Using interface reference to avoid circular dependency

@@ -1,79 +1,38 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Department } from '../models/department.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DepartmentService {
-  private apiUrl = 'http://localhost:8089/kaddem/departement';
-  private apiUrlUniv = 'http://localhost:8089/kaddem/universite';
+  private apiUrl = `${environment.apiUrl}/departement`;
 
   constructor(private http: HttpClient) { }
 
-  // Get all departments
-  getAllDepartments(): Observable<Department[]> {
-    return this.http.get<Department[]>(`${this.apiUrl}/retrieve-all-departements`)
-      .pipe(
-        catchError(this.handleError)
-      );
+  getDepartments(): Observable<Department[]> {
+    return this.http.get<Department[]>(this.apiUrl);
   }
 
-  // Get department by ID
-  getDepartmentById(id: number): Observable<Department> {
-    return this.http.get<Department>(`${this.apiUrl}/retrieve-departement/${id}`)
-      .pipe(
-        catchError(this.handleError)
-      );
+  getDepartment(id: number): Observable<Department> {
+    return this.http.get<Department>(`${this.apiUrl}/${id}`);
   }
 
-  // Add new department
-  addDepartment(department: Department): Observable<Department> {
-    return this.http.post<Department>(`${this.apiUrl}/add-departement`, department)
-      .pipe(
-        catchError(this.handleError)
-      );
+  createDepartment(department: Department): Observable<Department> {
+    return this.http.post<Department>(this.apiUrl, department);
   }
 
-  // Update department
-  updateDepartment(department: Department): Observable<Department> {
-    return this.http.put<Department>(`${this.apiUrl}/update-departement`, department)
-      .pipe(
-        catchError(this.handleError)
-      );
+  updateDepartment(id: number, department: Department): Observable<Department> {
+    return this.http.put<Department>(`${this.apiUrl}/${id}`, department);
   }
 
-  // Delete department
   deleteDepartment(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/remove-departement/${id}`)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Assign department to university
-  assignDepartmentToUniversity(idDepartement: number, idUniversite: number): Observable<Department> {
-    return this.http.put<Department>(
-      `${this.apiUrlUniv}/assignDepartementToUniversite/${idDepartement}/${idUniversite}`, 
-      {}
-    ).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // Get departments by university
-  getDepartmentsByUniversity(idUniversite: number): Observable<Department[]> {
-    return this.http.get<Department[]>(`${this.apiUrlUniv}/retrieveDepartementsByUniversite/${idUniversite}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  // Error handling
-  private handleError(error: any) {
-    console.error('An error occurred:', error);
-    return throwError(() => error.message || 'Server error');
+  assignDepartmentToUniversity(departmentId: number, universityId: number): Observable<Department> {
+    return this.http.put<Department>(`${this.apiUrl}/assignUniversiteToDepartement/${departmentId}/${universityId}`, {});
   }
 } 
