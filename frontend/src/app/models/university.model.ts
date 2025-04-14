@@ -1,7 +1,7 @@
 import { Department } from './department.model';
 
 export interface University {
-  idUniv: number;
+  idUniv?: number;
   nomUniv: string;
   imagePath?: string;
   description?: string;

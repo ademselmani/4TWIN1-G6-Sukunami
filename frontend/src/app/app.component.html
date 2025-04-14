@@ -5,7 +5,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link" routerLink="/universities" routerLinkActive="active">Universities</a>
         </li>
@@ -13,10 +13,17 @@
           <a class="nav-link" routerLink="/departments" routerLinkActive="active">Departments</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+            <i class="bi bi-bar-chart-fill"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" routerLink="/upload" routerLinkActive="active">File Upload</a>
         </li>
-        <!-- Add other navigation items here as needed -->
       </ul>
+      
+      <!-- Search Component -->
+      <app-university-search></app-university-search>
     </div>
   </div>
 </nav>
@@ -24,3 +31,6 @@
 <div class="container-fluid py-3">
   <router-outlet></router-outlet>
 </div>
+
+<!-- AI Assistant Chat Bubble -->
+<app-chat-bubble></app-chat-bubble>

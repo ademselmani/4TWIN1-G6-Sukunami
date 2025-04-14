@@ -4,6 +4,7 @@ import { UniversityDetailComponent } from './components/university/university-de
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { DepartmentListComponent } from './components/department/department-list/department-list.component';
 import { DepartmentDetailComponent } from './components/department/department-detail/department-detail.component';
+import { StatisticsDashboardComponent } from './components/dashboard/statistics-dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/universities', pathMatch: 'full' },
@@ -12,4 +13,5 @@ export const routes: Routes = [
   { path: 'departments', component: DepartmentListComponent },
   { path: 'departments/:id', component: DepartmentDetailComponent },
   { path: 'upload', component: FileUploadComponent },
+  { path: 'dashboard', component: StatisticsDashboardComponent },
 ];
