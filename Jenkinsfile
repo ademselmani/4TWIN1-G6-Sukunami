@@ -6,12 +6,13 @@ pipeline {
         maven 'M2_HOME'       
     }
 
-    environment {
-        IMAGE_NAME = 'youssef'
-        DOCKER_USERNAME = 'ysfbs'
-        DOCKER_PASSWORD = 'Ysf@2001.com'
-        COMPOSE_FILE = 'docker-compose.yml'
-    }
+environment {
+    DOCKER_USERNAME = 'ysfbs'
+    DOCKER_PASSWORD = 'Ysf@2001.com'
+    IMAGE_NAME = "${DOCKER_USERNAME}/youssef"
+    COMPOSE_FILE = 'docker-compose.yml'
+}
+
 
     stages {
         stage('Say Hello') {
