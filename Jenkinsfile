@@ -23,6 +23,16 @@ stage('GIT') {
                 sh 'mvn test'
             }
         }
+            stage('Package JAR') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+         stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
           
 }
 }
