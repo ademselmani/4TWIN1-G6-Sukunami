@@ -126,7 +126,7 @@
                 </ng-container>
                 
                 <!-- Edit Mode -->
-                <ng-container *ngIf="editingDepartment?.idDepart === department.idDepart">
+                <ng-container *ngIf="editingDepartment && editingDepartment.idDepart === department.idDepart">
                   <td>{{ department.idDepart }}</td>
                   <td>
                     <input 
@@ -153,4 +153,4 @@
       </div>
     </div>
   </div>
-</div> 
+</div>

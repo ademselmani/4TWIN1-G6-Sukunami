@@ -14,7 +14,7 @@ import { UniversityService } from '../../../services/university.service';
 })
 export class UniversityListComponent implements OnInit {
   universities: University[] = [];
-  newUniversity: University = { nomUniv: '' };
+  newUniversity: University = { idUniv: 0, nomUniv: '' }; // Initialize with object literal
   editingUniversity: University | null = null;
   loading = false;
   error = '';
@@ -50,7 +50,7 @@ export class UniversityListComponent implements OnInit {
     this.universityService.addUniversity(this.newUniversity).subscribe({
       next: (data) => {
         this.universities.push(data);
-        this.newUniversity = { nomUniv: '' };
+        this.newUniversity = { idUniv: 0, nomUniv: '' }; // Reset with object literal
         this.loading = false;
         this.error = '';
       },
@@ -111,4 +111,4 @@ export class UniversityListComponent implements OnInit {
       }
     });
   }
-} 
+}
