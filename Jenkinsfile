@@ -18,6 +18,11 @@ stage('GIT') {
                 sh 'mvn clean package'
             }
         }
+          stage('Run Unit Tests') {
+            steps {
+                sh 'mvn test'
+            }
+        }
           
 }
 }
