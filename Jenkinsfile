@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-
     tools {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
@@ -21,12 +20,11 @@ pipeline {
             }
         }
 
-                stage('Run Unit Tests') {
-                    steps {
-                        sh 'mvn test'
-                    }
-                }
-
+        stage('Run Unit Tests') {
+            steps {
+                sh 'mvn test'
+            }
+        }
 
         stage('Package JAR') {
             steps {
@@ -34,23 +32,11 @@ pipeline {
             }
         }
 
-                        stage('MVN SONARQUBE') {
-                            steps {
-                                sh "mvn sonar:sonar -Dsonar.login=squ_ecf6cf5b28cf7330031e8fdc913940a1efc5dcca -Dmaven.test.skip=true"
-                            }
-                        }
+        stage('MVN SONARQUBE') {
+            steps {
+                sh "mvn sonar:sonar -Dsonar.login=squ_ecf6cf5b28cf7330031e8fdc913940a1efc5dcca -Dmaven.test.skip=true"
+            }
+        }
 
-                        stage('SonarQube Analysis') {
-                        steps{
-                        script {
-                        def scannerHome = tool 'scanner'
-                        withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                        }
-                        }
-                        }
-                        }
-
-
-}
+    }
 }
