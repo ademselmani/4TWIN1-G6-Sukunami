@@ -27,6 +27,12 @@ pipeline {
                     }
                 }
 
+                        stage('MVN SONARQUBE') {
+                            steps {
+                                sh "mvn sonar:sonar -Dsonar.login=sqa_12defa566ba92b9f8ebed75b4609633e30d50a64 -Dmaven.test.skip=true"
+                            }
+                        }
+
         stage('Package JAR') {
             steps {
                 sh 'mvn package -DskipTests'
