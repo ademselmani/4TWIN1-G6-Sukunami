@@ -27,6 +27,17 @@ services:
     networks:
       - kaddem-network
     restart: always
+    
+  frontend:
+    build: ./frontend
+    container_name: frontend-app
+    ports:
+      - "80:80"
+    depends_on:
+      - kaddem-app
+    networks:
+      - kaddem-network
+    restart: always
 
   prometheus:
     image: prom/prometheus:latest

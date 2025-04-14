@@ -1,0 +1,63 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>University Details</h2>
+    <button class="btn btn-secondary" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back to List
+    </button>
+  </div>
+  
+  <!-- Error Alert -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- University Details Card -->
+  <div *ngIf="university && !loading" class="card">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">{{ university.nomUniv }}</h5>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">ID:</div>
+        <div class="col-md-9">{{ university.idUniv }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Name:</div>
+        <div class="col-md-9">{{ university.nomUniv }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Departments Section -->
+  <div *ngIf="university?.departements && university.departements.length > 0" class="card mt-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Departments ({{ university.departements.length }})</h5>
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li *ngFor="let dept of university.departements" class="list-group-item">
+          <div class="row">
+            <div class="col-md-3">ID: {{ dept.idDepart }}</div>
+            <div class="col-md-9">{{ dept.nomDepart }}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div *ngIf="university?.departements?.length === 0 || !university?.departements" class="card mt-4">
+    <div class="card-header bg-warning">
+      <h5 class="mb-0">Departments</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-center">No departments assigned to this university yet.</p>
+    </div>
+  </div>
+</div> 

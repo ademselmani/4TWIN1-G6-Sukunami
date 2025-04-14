@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'mohamedbsila/kaddem'
+        FRONTEND_IMAGE_NAME = 'mohamedbsila/kaddem-frontend'
         COMPOSE_FILE = 'docker-compose.yml'
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
         SONAR_TOKEN = 'sqa_e807ec4e65827db1f5474b489628b113d16db430'
@@ -11,6 +12,7 @@ pipeline {
     tools {
         jdk 'JAVA_HOME'   
         maven 'M2_HOME'   
+        nodejs 'NODE_HOME'
     }
 
     stages {
@@ -73,16 +75,34 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Backend Docker Image') {
             steps {
                 sh 'docker build -t ${IMAGE_NAME}:latest .'
             }
         }
+        
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+        
+        stage('Build Frontend Docker Image') {
+            steps {
+                dir('frontend') {
+                    sh 'docker build -t ${FRONTEND_IMAGE_NAME}:latest .'
+                }
+            }
+        }
 
-        stage('Push Docker Image to Docker Hub') {
+        stage('Push Docker Images to Docker Hub') {
             steps {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh 'docker push ${IMAGE_NAME}:latest'
+                sh 'docker push ${FRONTEND_IMAGE_NAME}:latest'
                 sh 'docker logout'
             }
         }
@@ -122,9 +142,10 @@ EOF
                     # Stop any potentially running services on the same ports
                     docker ps | grep 9091 | awk '{print $1}' | xargs -r docker stop
                     docker ps | grep 3001 | awk '{print $1}' | xargs -r docker stop
+                    docker ps | grep 80 | awk '{print $1}' | xargs -r docker stop
                     
                     # Force remove existing containers if they exist
-                    docker container rm -f kaddem-app mysql-db prometheus grafana || true
+                    docker container rm -f kaddem-app mysql-db prometheus grafana frontend-app || true
                     
                     # Check if docker-compose or docker compose command should be used
                     if command -v docker-compose &> /dev/null; then
@@ -138,7 +159,7 @@ EOF
             }
         }
 
-        stage('Verify Monitoring Services') {
+        stage('Verify Services') {
             steps {
                 sh '''
                     # Wait for services to start up
@@ -151,6 +172,14 @@ EOF
                     # Check if Grafana is running
                     echo "Checking Grafana status:"
                     curl -s http://localhost:3001/api/health || echo "Grafana not responding"
+                    
+                    # Check if Frontend is running
+                    echo "Checking Frontend status:"
+                    curl -s http://localhost || echo "Frontend not responding"
+                    
+                    # Check if Backend is running
+                    echo "Checking Backend status:"
+                    curl -s http://localhost:8082/kaddem/actuator/health || echo "Backend not responding"
                 '''
             }
         }
@@ -160,7 +189,8 @@ EOF
         success {
             echo '✅ Build and Deployment successful!'
             echo 'Access your services at:'
-            echo '- Application: http://localhost:8082/kaddem'
+            echo '- Frontend: http://localhost'
+            echo '- Backend API: http://localhost:8082/kaddem'
             echo '- Prometheus: http://localhost:9091'
             echo '- Grafana: http://localhost:3001 (default login: admin/admin)'
         }

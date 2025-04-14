@@ -12,6 +12,7 @@ import tn.esprit.spring.kaddem.services.IUniversiteService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.springframework.web.servlet.ModelAndView;
 import java.util.Set;
 
 @RestController
@@ -21,6 +22,11 @@ import java.util.Set;
 public class UniversiteRestController {
 	@Autowired
 	IUniversiteService universiteService;
+
+	@GetMapping("/")
+    public ModelAndView home() {
+        return new ModelAndView("redirect:/kaddem/frontend/public/index.html");
+    }
 	// http://localhost:8089/Kaddem/universite/retrieve-all-universites
 	@GetMapping("/retrieve-all-universites")
 	public ResponseEntity<List<Universite>> getUniversites() {
@@ -138,5 +144,3 @@ public class UniversiteRestController {
 		}
 	}
 }
-
-
