@@ -81,6 +81,7 @@ class UniversiteServiceImplTest {
     void testUpdateUniversite() {
         // Given
         Universite updatedUniversite = new Universite(1, "Updated University");
+        when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
         when(universiteRepository.save(any(Universite.class))).thenReturn(updatedUniversite);
         
         // When
@@ -90,6 +91,7 @@ class UniversiteServiceImplTest {
         assertNotNull(result);
         assertEquals(1, result.getIdUniv());
         assertEquals("Updated University", result.getNomUniv());
+        verify(universiteRepository, times(1)).findById(1);
         verify(universiteRepository, times(1)).save(updatedUniversite);
     }
 
