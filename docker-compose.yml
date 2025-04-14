@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=kaddem
+    volumes:
+      - db:/var/lib/mysql
+
+  kaddem:
+    image: youssef/kaddem
+    container_name: kaddem
+    ports:
+      - "8089:8089"
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/kaddem
+      - SPRING_DATASOURCE_USERNAME=root
+
+volumes:
+  db:

@@ -21,6 +21,12 @@ pipeline {
             }
         }
 
+                stage('Run Unit Tests') {
+                    steps {
+                        sh 'mvn test'
+                    }
+                }
+
         stage('Package JAR') {
             steps {
                 sh 'mvn package -DskipTests'
