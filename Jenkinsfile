@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'ademselmani/projetPI'
+        IMAGE_NAME = 'ademselmani/projetpi'
         DOCKER_USERNAME = 'ademselmani'
         DOCKER_PASSWORD = 'adem94038666'
         COMPOSE_FILE = 'docker-compose.yml'
