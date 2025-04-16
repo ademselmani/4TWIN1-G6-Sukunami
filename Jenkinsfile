@@ -68,15 +68,7 @@ pipeline {
             }
         }
 
-        stage('Restart Services with Docker Compose') {
-            steps {
-                sh '''
-                    docker-compose -f $COMPOSE_FILE down || true
-                    docker-compose -f $COMPOSE_FILE up -d
-                '''
-            }
-        }
-    }
+       
 
     post {
         success {
