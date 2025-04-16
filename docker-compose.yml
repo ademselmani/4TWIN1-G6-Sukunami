@@ -13,7 +13,7 @@ services:
       - db:/var/lib/mysql
 
   kaddem:
-    image: ademselmani/kaddem
+    image: ademselmani/projetPI
     container_name: kaddem
     ports:
       - "8089:8089"
