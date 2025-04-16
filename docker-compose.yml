@@ -12,7 +12,7 @@ services:
     volumes:
       - db:/var/lib/mysql
 
-  kaddem:
+  projetpi:
     image: ademselmani/projetpi
     container_name: projetpi
     ports:
